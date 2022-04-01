@@ -25,13 +25,4 @@ class LoginController extends AbstractController
             'error' => $error,
         ]);
     }
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
-        die("4");
-
-//        return new RedirectResponse(
-//            $this->router->generate('app_homepage')
-//        );
-    }
 }
