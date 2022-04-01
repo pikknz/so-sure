@@ -3,9 +3,28 @@ security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\User:
+            algorithm: auto
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # used to reload user from session & other features (e.g. switch_user)
+        users_in_memory:
+            memory:
+                users:
+                    ben:
+                        password: '$2y$10$6awkK2WTpqfYx90P1.e6dOmsUF.Q6dXJRrVvr0zSbHZ782hnbpIyG'
+                        roles: 'ROLE_USER'
+                    ed: { password: '$2y$10$HeTCwp.dmV0uHZGukqujS.RVu8477WIbs3Rmo8V5XBqDQLH4W0H0G',
+                          roles: [ 'ROLE_SUPER_ADMIN' ] }
+                    matt: { password: '$2y$10$SWhwDpUvoJZ2FKwM5fJWEuUPV/okKnEmhSkv7mqMEZtmvAuA1lcNW',
+                            roles: [ 'ROLE_ADMIN' ] }
+                    simon: { password: '$2y$10$jctIOh9Sj4y4BFy1f.ZjkOZLAX4SsafyJXUHgj9nNXZyee.wZ2SCG',
+                             roles: [ 'ROLE_USER' ] }
+                    geoff: { password: '$2y$10$NZcJcEpnTbyeTdhg.Hd9KeAuXgA7qEMHaDiS6GnOyBfQ9zcAXqNee',
+                             roles: [ 'ROLE_ADMIN' ] }
+#        app_user_provider:
+#
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -13,7 +32,15 @@ security:
         main:
             lazy: true
             provider: users_in_memory
-
+            form_login:
+                # "login" is the name of the route created previously
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+            logout:
+                path: app_logout
+            #http_basic:
+            #    realm: Secured Area
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
@@ -23,8 +50,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/restricted, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:
